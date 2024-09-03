@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {FormEvent, useEffect, useRef, useState} from 'react';
 import logo from './ChatGPTLogo.png';
 import './App.css';
 import TextBox from './TextBox';
@@ -6,15 +6,16 @@ import CustomButton from './PromptButton';
 import ChatField, {ChatFieldInterface} from './ChatField';
 import icon from './icon.png';
 
-function textBoxOnChange(value: string) {
-  return value;
-}
-
 function App() {
   const [isVisible, setVisible] = useState(true);
   const [messageToSend, setMessageToSend] = useState<string>("");
   const [numMessages, setNumMessages] = useState(0);
   const chatFieldRef = useRef<InstanceType<typeof ChatFieldInterface> | null>(null);
+
+  function textBoxOnChange(value: string) {
+    setMessageToSend(value);
+    return value;
+  }
 
   function response1(message: string) {
     setMessageToSend(message);
@@ -22,10 +23,17 @@ function App() {
     setNumMessages(numMessages+1);
   }
 
+  function handleSend(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); // To prevent the form from refreshing the page
+    setVisible(false);
+    setNumMessages(numMessages+1);
+  }
+
   useEffect(() => {
     if (!isVisible && chatFieldRef.current) {
-      chatFieldRef.current.sendMessage('You', messageToSend);
+      chatFieldRef.current.sendMessage(messageToSend);
     }
+    setMessageToSend("");
   }, [numMessages]);
 
   return (
@@ -48,10 +56,10 @@ function App() {
 
         {isVisible && (
           <div className='Body'>
-            <CustomButton onClick={() => response1("1")} label="Response 1"/>
-            <CustomButton onClick={() => response1("2")} label="Response 2"/>
-            <CustomButton onClick={() => response1("3")} label="Response 3"/>
-            <CustomButton onClick={() => response1("4")} label="Response 4"/>
+            <CustomButton onClick={() => response1("Tell me about Jake's academic career.")} label="Tell me about Jake's academic career."/>
+            <CustomButton onClick={() => response1("What is Jake's job experience?")} label="What is Jake's job experience?"/>
+            <CustomButton onClick={() => response1("What are some of Jake's extra-circiculars?")} label="What are some of Jake's extra-circiculars?"/>
+            <CustomButton onClick={() => response1("Where can I find Jake's resume or other contact information?")} label="Where can I find Jake's resume or other contact information?"/>
           </div>
         )}
       </>
@@ -63,9 +71,11 @@ function App() {
         )}
       </>
       <footer className='Footer'>
-        <TextBox placeholder="Contact me by typing here..." onChange={textBoxOnChange}/>
+        <form onSubmit={handleSend}>
+          <TextBox placeholder="Message JakeGPT..." onChange={textBoxOnChange} value={messageToSend}/>
+        </form>
         <span className='disclaimer'>
-          JakeGPT is not actually ai-powered, it's just meant to be memorable.
+          JakeGPT is actually ai-powered, so please don't say anything you wouldn't tell the real ChatGPT.
         </span>
       </footer>
     </div>

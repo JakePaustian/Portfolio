@@ -5,17 +5,9 @@ import {createStuffDocumentsChain} from "langchain/chains/combine_documents";
 import {createRetrievalChain} from "langchain/chains/retrieval";
 import {AIMessage, HumanMessage} from "@langchain/core/messages";
 import {vectorstore, history} from "./index";
+import WebSocket from 'ws';
 
-export async function chat(req: any, res: any) {
-    if (req.body == undefined) {
-        res.status(400).send("Missing body in request");
-        return;
-    } else if (req.body.message == undefined) {
-        res.status(400).send("Missing message in request.");
-        return;
-    }
-
-    console.log(req.body.message + "\n");
+export async function chat(message: string, ws: WebSocket) {
 
     const chat = new ChatOpenAI({
         openAIApiKey: process.env.OPEN_AI_API_KEY,
@@ -39,7 +31,7 @@ export async function chat(req: any, res: any) {
     const historyAwareRetrievalPrompt = ChatPromptTemplate.fromMessages([
         [
             "system",
-            "You are speaking to an employer who is looking at Jake Paustian, a Software Engineer, and his online resume." +
+            "You're name is JakeGPT. You are speaking to an employer who is looking at Jake Paustian, a Software Engineer, and his online resume." +
             "You need to speak to the employer and sell Jake Paustian as a fantastic engineer." +
             "Answer the user's questions based on the below context:\n\n{context}",
         ],
@@ -65,19 +57,23 @@ export async function chat(req: any, res: any) {
 
     const response = await conversationalRetrievalChain.stream({
         chat_history: history,
-        input: req.body.message,
+        input: message,
     });
 
-    history.push(new HumanMessage(req.body.message));
+    history.push(new HumanMessage(message));
 
     let responseString = "";
     for await (const chunk of response) {
         if (chunk != undefined && chunk.answer != undefined) {
             responseString += chunk.answer;
             process.stdout.write(chunk.answer);
+            ws.send(JSON.stringify({
+                status: 200,
+                message: chunk.answer
+            }));
         }
     }
     console.log();
+    ws.close(1000); // 200, but for WebSockets
     history.push(new AIMessage(responseString));
-    res.status(200).send();
 }
