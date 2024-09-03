@@ -1,11 +1,8 @@
 import React, {Component, createRef, forwardRef} from 'react';
 
-// Here we define the type for individual messages.
-type Message = { user: string; messageContent: string; };
-
 // This type defines the shape of the state object for this class.
 type State = {
-  messages: Message[];
+  messages: string[];
 }
 
 export class ChatFieldInterface extends Component<{}, State> {
@@ -21,12 +18,47 @@ export class ChatFieldInterface extends Component<{}, State> {
     };
   }
 
-  // Make sendMessage an instance method
-  sendMessage(user: string, messageContent: string) {
-    console.log(messageContent);
+  addMessage(messageContent: string) {
     this.setState(prevState => ({
-      messages: [...prevState.messages, { user, messageContent }]
+      messages: [...prevState.messages, messageContent]
     }));
+  }
+
+  appendMessage(messageContent: string) {
+    this.setState(prevState => {
+      const messagesClone = [...prevState.messages];
+      const lastIndex = messagesClone.length - 1;
+      if (lastIndex >= 0) {
+        messagesClone[lastIndex] += messageContent;
+      }
+
+      return { messages: messagesClone };
+    });
+  }
+
+  sendMessage(messageContent: string) {
+    this.addMessage(messageContent);
+    this.addMessage("");
+    let func = this.appendMessage.bind(this);
+
+    const ws = new WebSocket('ws://localhost:8080/chat');
+
+    ws.onopen = function() {
+      console.log('Connection is open ...');
+      ws.send(JSON.stringify({ message: messageContent }));
+    };
+
+    ws.onerror = function(err) {
+      console.log('err: ', err);
+    }
+
+    ws.onmessage = function(event) {
+      console.log('received: ' + event.data);
+      const data = JSON.parse(event.data);
+      if (data && data.message) {
+        func(data.message);
+      }
+    }
   }
 
   // scrollToBottom scrolls the view to the latest message (the bottom of the div).
@@ -57,11 +89,11 @@ export class ChatFieldInterface extends Component<{}, State> {
             borderRadius: '10px'
           }}>
             {/* Make text white */}
-            <h4 style={{ color: 'white' }}>{message.user}</h4>
-            <p style={{ color: 'white' }}>{message.messageContent}</p>
+            <h4 style={{color: 'white'}}>{index % 2 === 0 ? "You" : "JakeGPT"}</h4>
+            <p style={{color: 'white', whiteSpace: 'pre-wrap'}}>{message}</p>
           </div>
         ))}
-        <div ref={this.messagesEndRef} />
+        <div ref={this.messagesEndRef}/>
       </div>
     );
   }
