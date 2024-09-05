@@ -88,7 +88,7 @@ function App() {
           <input type="submit" id="hiddenSubmit" style={{display: "none"}}/>
         </form>
         <span className='disclaimer'>
-          JakeGPT is actually ai-powered, so please don't say anything you wouldn't tell the real ChatGPT.
+          JakeGPT is actually ai-powered, it's answers might have errors.
         </span>
       </footer>
       {isModalVisible && (

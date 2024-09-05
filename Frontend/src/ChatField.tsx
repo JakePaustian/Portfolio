@@ -41,7 +41,7 @@ export class ChatFieldInterface extends Component<{}, State> {
     this.addMessage("");
     let func = this.appendMessage.bind(this);
 
-    const ws = new WebSocket('ws://localhost:8080/chat');
+    const ws = new WebSocket('ws://3.143.211.100:8080/chat');
 
     ws.onopen = function() {
       console.log('Connection is open ...');
