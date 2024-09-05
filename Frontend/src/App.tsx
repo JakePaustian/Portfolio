@@ -1,4 +1,4 @@
-import React, {FormEvent, useEffect, useRef, useState} from 'react';
+import {FormEvent, useEffect, useRef, useState} from 'react';
 import logo from './ChatGPTLogo.png';
 import './App.css';
 import TextBox from './TextBox';

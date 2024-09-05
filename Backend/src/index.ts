@@ -9,6 +9,8 @@ import fs from "fs/promises";
 import { WebPDFLoader } from "langchain/document_loaders/web/pdf";
 import cors from 'cors';
 import WebSocket from 'ws';
+import * as fs2 from 'fs';
+import * as https from "https";
 
 dotenv.config();
 const embeddings = new OpenAIEmbeddings();
@@ -24,7 +26,12 @@ const port = process.env.PORT;
 export let history: any[] = [];
 export let vectorstore: MemoryVectorStore;
 
-const wss = new WebSocket.Server({ port: 8080 });
+const server = https.createServer({
+    cert: fs2.readFileSync('cert.pem'),
+    key: fs2.readFileSync('key.pem')
+});
+
+const wss = new WebSocket.Server({ server });
 
 wss.on('connection', ws => {
     ws.on('message', async message => {
@@ -41,6 +48,8 @@ wss.on('connection', ws => {
         await chat(request.message, ws);
     });
 });
+
+server.listen(8080);
 
 // Ran on start up
 app.listen(port,async () => {
