@@ -1,4 +1,4 @@
-import React, {Component, createRef, forwardRef} from 'react';
+import {Component, createRef, forwardRef} from 'react';
 
 // This type defines the shape of the state object for this class.
 type State = {
@@ -41,7 +41,7 @@ export class ChatFieldInterface extends Component<{}, State> {
     this.addMessage("");
     let func = this.appendMessage.bind(this);
 
-    const ws = new WebSocket('ws://localhost:8080/chat');
+    const ws = new WebSocket('wss://3.143.211.100:8080/chat');
 
     ws.onopen = function() {
       console.log('Connection is open ...');
@@ -75,12 +75,11 @@ export class ChatFieldInterface extends Component<{}, State> {
     this.scrollToBottom();
   }
 
-  // render() is used to define the component's DOM structure.
   render() {
     const { messages } = this.state;
     return (
       // Set width and height to 100% to expand the size of the parent div.
-      <div style={{ width: '95vw', height: '85vh', overflowY: 'scroll' }}>
+      <div style={{ width: '95vw', height: '83vh', overflowY: 'scroll', paddingTop: '2vh' }}>
         {messages.map((message, index) => (
           <div key={index} style={{
             backgroundColor: index % 2 === 0 ? '#343541' : '#292a33',
@@ -88,7 +87,6 @@ export class ChatFieldInterface extends Component<{}, State> {
             padding: '10px',
             borderRadius: '10px'
           }}>
-            {/* Make text white */}
             <h4 style={{color: 'white'}}>{index % 2 === 0 ? "You" : "JakeGPT"}</h4>
             <p style={{color: 'white', whiteSpace: 'pre-wrap'}}>{message}</p>
           </div>

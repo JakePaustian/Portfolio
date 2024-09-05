@@ -1,5 +1,5 @@
 
-import React, { ChangeEvent, FC, useState } from 'react';
+import { ChangeEvent, FC } from 'react';
 
 interface TextBoxProps {
   placeholder?: string;
