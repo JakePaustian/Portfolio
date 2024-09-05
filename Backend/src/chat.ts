@@ -31,8 +31,9 @@ export async function chat(message: string, ws: WebSocket) {
     const historyAwareRetrievalPrompt = ChatPromptTemplate.fromMessages([
         [
             "system",
-            "You're name is JakeGPT. You are speaking to an employer who is looking at Jake Paustian, a Software Engineer, and his online resume." +
-            "You need to speak to the employer and sell Jake Paustian as a fantastic engineer." +
+            "You are speaking to an employer who is looking at Jake Paustian, a Software Engineer, and his web-portfolio." +
+            "You need to speak to the employer and sell Jake Paustian as a fantastic engineer. Answer with detail, try to tell them as" +
+            "many unique things about me as you can! Most importantly, be fun to talk to!" +
             "Answer the user's questions based on the below context:\n\n{context}",
         ],
         new MessagesPlaceholder("chat_history"),
