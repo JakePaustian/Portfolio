@@ -1,5 +1,5 @@
-
 import { ChangeEvent, FC } from 'react';
+import icon from './send.png';
 
 interface TextBoxProps {
   placeholder?: string;
@@ -14,12 +14,18 @@ const TextBox: FC<TextBoxProps> = ({ placeholder, onChange, value }) => {
   };
 
   return (
-    <input
-      className='TextBox'
-      value={value}
-      placeholder={placeholder}
-      onChange={handleInputChange}
-    />
+    <div className='TextFooter'>
+      <input
+        className='TextBox'
+        value={value}
+        placeholder={placeholder}
+        onChange={handleInputChange}
+      />
+      <img src={icon} className="send-icon" alt="icon" onClick={() => {
+        const submitButton = document.getElementById('hiddenSubmit') as HTMLButtonElement;
+        submitButton?.click();
+      }}/>
+    </div>
   );
 };
 

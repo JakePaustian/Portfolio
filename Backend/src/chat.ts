@@ -73,7 +73,7 @@ export async function chat(message: string, ws: WebSocket) {
             }));
         }
     }
-    console.log();
+    console.log("\n\n");
     ws.close(1000); // 200, but for WebSockets
     history.push(new AIMessage(responseString));
 }
